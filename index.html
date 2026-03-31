@@ -105,7 +105,7 @@ input::placeholder, textarea::placeholder { color: #2a2a34; }
 .chevron { font-size: 0.62rem; color: #333; }
 .expert-card-body { margin-top: 0.8rem; padding-top: 0.8rem; font-size: 0.82rem; color: #999; line-height: 1.65; display: none; border-top: 1px solid #1a1a22; }
 .expert-card.open .expert-card-body { display: block; }
-
+ 
 /* ══ PROMPTS SECTION ══ */
 .prompts-header { text-align: center; margin-bottom: 2rem; animation: fadeUp 0.4s ease; }
 .prompts-crown { font-size: 2rem; margin-bottom: 0.5rem; }
@@ -164,7 +164,7 @@ input::placeholder, textarea::placeholder { color: #2a2a34; }
   border-radius: 10px; color: #666; cursor: pointer;
   font-family: monospace; font-size: 0.78rem; letter-spacing: 0.08em;
 }
-
+ 
 @keyframes fadeUp { from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);} }
 @keyframes glow   { 0%,100%{box-shadow:0 0 20px #c8a96e44;}50%{box-shadow:0 0 40px #c8a96e88;} }
 @keyframes bounce { 0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);} }
@@ -172,7 +172,7 @@ input::placeholder, textarea::placeholder { color: #2a2a34; }
 </style>
 </head>
 <body>
-
+ 
 <div class="topbar">
   <div class="logo">A</div>
   <div>
@@ -181,9 +181,9 @@ input::placeholder, textarea::placeholder { color: #2a2a34; }
   </div>
   <button id="btnNovo" onclick="reset()">← NOVO CASO</button>
 </div>
-
+ 
 <div class="main">
-
+ 
 <!-- INPUT -->
 <div id="phaseInput">
   <div class="intro">
@@ -217,7 +217,7 @@ input::placeholder, textarea::placeholder { color: #2a2a34; }
   </div>
   <button class="btn-primary" id="btnSubmit" onclick="startAnalysis()">SUBMETER AO CEO →</button>
 </div>
-
+ 
 <!-- CEO THINKING -->
 <div id="phaseCeoThinking">
   <div class="phase-center">
@@ -226,7 +226,7 @@ input::placeholder, textarea::placeholder { color: #2a2a34; }
     <div class="phase-sub">Montando o plano de delegação</div>
   </div>
 </div>
-
+ 
 <!-- PLAN APPROVAL -->
 <div id="phasePlanApproval">
   <div class="ceo-card">
@@ -251,7 +251,7 @@ input::placeholder, textarea::placeholder { color: #2a2a34; }
     </div>
   </div>
 </div>
-
+ 
 <!-- DELEGATING -->
 <div id="phaseDelegating">
   <div style="text-align:center;margin-bottom:1.8rem;animation:fadeUp 0.4s ease">
@@ -260,7 +260,7 @@ input::placeholder, textarea::placeholder { color: #2a2a34; }
   </div>
   <div class="expert-list" id="expertList"></div>
 </div>
-
+ 
 <!-- SYNTHESIZING -->
 <div id="phaseSynthesizing">
   <div class="phase-center">
@@ -269,7 +269,7 @@ input::placeholder, textarea::placeholder { color: #2a2a34; }
     <div class="phase-sub">Transformando análises em ações concretas para o Lovable</div>
   </div>
 </div>
-
+ 
 <!-- REPORT -->
 <div id="phaseReport">
   <div class="critical-box">
@@ -295,7 +295,7 @@ input::placeholder, textarea::placeholder { color: #2a2a34; }
     🚀 VER PROMPTS PARA EXECUTAR NO LOVABLE →
   </button>
 </div>
-
+ 
 <!-- PROMPTS -->
 <div id="phasePrompts">
   <div class="prompts-header">
@@ -306,9 +306,9 @@ input::placeholder, textarea::placeholder { color: #2a2a34; }
   <div id="promptsList"></div>
   <button class="btn-report-back" onclick="goToReport()">← Voltar ao relatório</button>
 </div>
-
+ 
 </div><!-- /main -->
-
+ 
 <script>
 const TEAM = [
   { id:"strategist", name:"Sofia Estratégia", role:"Conversão & Copy",    av:"S", color:"#FF6B35" },
@@ -318,28 +318,28 @@ const TEAM = [
 ];
 const IMPACT_COLOR = {"Alto":"#FF6B35","Médio":"#F59E0B","Baixo":"#22C55E"};
 const PRAZO_COLOR  = {"Imediato":"#FF6B35","1 semana":"#F59E0B","1 mês":"#22C55E"};
-
+ 
 let expertResults = {};
 let ceoData = null;
 let synthesisData = null;
 let lovablePrompts = [];
-
+ 
 function show(id)  { document.getElementById(id).style.display = "block"; }
 function hide(id)  { document.getElementById(id).style.display = "none"; }
-
+ 
 async function callClaude(prompt) {
   const res = await fetch("/.netlify/functions/claude", {
     method:"POST", headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({ model:"claude-sonnet-4-20250514", max_tokens:1000, messages:[{role:"user",content:prompt}] })
+    body: JSON.stringify({ model:"claude-sonnet-4-20250514", max_tokens:4000, messages:[{role:"user",content:prompt}] })
   });
   const data = await res.json();
   return data.content?.map(b=>b.text||"").join("\n") || "";
 }
-
+ 
 function parseJSON(text) {
   try { return JSON.parse(text.replace(/```json|```/g,"").trim()); } catch { return null; }
 }
-
+ 
 function startAnalysis() {
   const issue = document.getElementById("inputIssue").value.trim();
   if (!issue) return;
@@ -348,7 +348,7 @@ function startAnalysis() {
   document.getElementById("btnNovo").style.display = "block";
   runCeo();
 }
-
+ 
 async function runCeo() {
   const url   = document.getElementById("inputUrl").value;
   const issue = document.getElementById("inputIssue").value;
@@ -371,12 +371,12 @@ Responda APENAS em JSON válido:
     renderPlan(); show("planWrap");
   });
 }
-
+ 
 function typeWriter(el, text, cb, i=0) {
   if (i < text.length) { el.textContent = text.slice(0,i+1); setTimeout(()=>typeWriter(el,text,cb,i+1),16); }
   else { cb&&cb(); }
 }
-
+ 
 function renderPlan() {
   const list = document.getElementById("planList");
   list.innerHTML = "";
@@ -388,14 +388,14 @@ function renderPlan() {
       <div class="plan-mission">${item.missao}</div></div></div>`;
   });
 }
-
+ 
 async function approvePlan() {
   hide("phasePlanApproval"); show("phaseDelegating");
   const url   = document.getElementById("inputUrl").value;
   const issue = document.getElementById("inputIssue").value;
   const missions = {};
   (ceoData?.plano||[]).forEach(p => { const e=TEAM.find(t=>t.name===p.especialista); if(e) missions[e.id]=p.missao; });
-
+ 
   const list = document.getElementById("expertList");
   list.innerHTML = "";
   TEAM.forEach(e => {
@@ -408,7 +408,7 @@ async function approvePlan() {
         <div class="dot" style="background:${e.color};animation-delay:0.36s"></div>
       </div></div></div>`;
   });
-
+ 
   await Promise.all(TEAM.map(async e => {
     const mission = missions[e.id]||`Analise: ${issue}`;
     const text = await callClaude(`Você é ${e.name}, especialista em ${e.role}.
@@ -418,60 +418,37 @@ Dê 3-4 insights concretos com bullet points e emojis. Responda em português.`)
     document.getElementById("ei_"+e.id).classList.add("done");
     document.getElementById("status_"+e.id).innerHTML = `<span class="done-check">✓ pronto</span>`;
   }));
-
+ 
   hide("phaseDelegating"); show("phaseSynthesizing");
   await runSynthesis(url, issue);
 }
-
+ 
 async function runSynthesis(url, issue) {
   const analysesText = TEAM.map(e=>`### ${e.name}\n${expertResults[e.id]||""}`).join("\n\n");
-
+ 
   // Synthesis + Lovable prompts in one call
-  const raw = await callClaude(`Você é APEX, CEO Virtual. Consolide as análises e gere prompts para o Lovable executar.
-Caso: ${issue} | URL: ${url||"não informada"}
-Análises: ${analysesText}
-
-Responda APENAS em JSON válido:
-{
-  "problema_critico":"frase impactante",
-  "resumo_executivo":"3-4 frases",
-  "prioridades":[
-    {"rank":1,"acao":"ação","impacto":"Alto","responsavel":"nome","prazo":"Imediato"},
-    {"rank":2,"acao":"ação","impacto":"Alto","responsavel":"nome","prazo":"1 semana"},
-    {"rank":3,"acao":"ação","impacto":"Médio","responsavel":"nome","prazo":"1 semana"},
-    {"rank":4,"acao":"ação","impacto":"Médio","responsavel":"nome","prazo":"1 mês"},
-    {"rank":5,"acao":"ação","impacto":"Baixo","responsavel":"nome","prazo":"1 mês"}
-  ],
-  "proximos_passos":["passo1","passo2","passo3"],
-  "lovable_prompts":[
-    {
-      "rank":1,
-      "titulo":"título curto da correção",
-      "impacto":"Alto",
-      "onde":"onde colar no Lovable: chat principal / componente X / arquivo Y",
-      "prompt":"prompt completo e detalhado para colar no Lovable. Deve ser claro, específico e pronto para executar. Mencione o problema, o que precisa mudar e o resultado esperado."
-    },
-    {"rank":2,"titulo":"...","impacto":"Alto","onde":"...","prompt":"..."},
-    {"rank":3,"titulo":"...","impacto":"Médio","onde":"...","prompt":"..."},
-    {"rank":4,"titulo":"...","impacto":"Médio","onde":"...","prompt":"..."},
-    {"rank":5,"titulo":"...","impacto":"Baixo","onde":"...","prompt":"..."}
-  ]
-}`);
-
+  const raw = await callClaude(`Você é APEX, CEO Virtual. Analise o caso e responda APENAS em JSON válido sem texto extra.
+Problema: ${issue}
+URL: ${url||"não informada"}
+Análises da equipe: ${analysesText.slice(0,2000)}
+ 
+JSON de resposta:
+{"problema_critico":"frase curta e impactante sobre o maior problema","resumo_executivo":"2-3 frases consolidando os achados","prioridades":[{"rank":1,"acao":"ação concreta","impacto":"Alto","responsavel":"Sofia","prazo":"Imediato"},{"rank":2,"acao":"ação concreta","impacto":"Alto","responsavel":"Rafael","prazo":"1 semana"},{"rank":3,"acao":"ação concreta","impacto":"Médio","responsavel":"Lucas","prazo":"1 semana"}],"proximos_passos":["passo 1","passo 2","passo 3"],"lovable_prompts":[{"rank":1,"titulo":"título da correção","impacto":"Alto","onde":"chat do Lovable","prompt":"prompt detalhado e pronto para executar no Lovable"},{"rank":2,"titulo":"título","impacto":"Alto","onde":"chat do Lovable","prompt":"prompt detalhado"},{"rank":3,"titulo":"título","impacto":"Médio","onde":"chat do Lovable","prompt":"prompt detalhado"}]}`);
+ 
   synthesisData = parseJSON(raw);
   if (!synthesisData) { synthesisData = {problema_critico:"Análise concluída",resumo_executivo:"Ver análises da equipe abaixo.",prioridades:[],proximos_passos:[],lovable_prompts:[]}; }
   lovablePrompts = synthesisData.lovable_prompts || [];
-
+ 
   renderReport();
   hide("phaseSynthesizing");
   show("phaseReport");
 }
-
+ 
 function renderReport() {
   const s = synthesisData;
   document.getElementById("reportCritical").textContent = s.problema_critico||"";
   document.getElementById("reportSummary").textContent  = s.resumo_executivo||"";
-
+ 
   const pl = document.getElementById("reportPriorities");
   pl.innerHTML = "";
   (s.prioridades||[]).forEach(p => {
@@ -487,13 +464,13 @@ function renderReport() {
         </div>
       </div></div>`;
   });
-
+ 
   const stl = document.getElementById("reportSteps");
   stl.innerHTML = "";
   (s.proximos_passos||[]).forEach((step,i) => {
     stl.innerHTML += `<div class="step-row"><span class="step-num">${i+1}.</span><span class="step-text">${step}</span></div>`;
   });
-
+ 
   const eg = document.getElementById("reportExperts");
   eg.innerHTML = "";
   TEAM.forEach(e => {
@@ -507,29 +484,29 @@ function renderReport() {
     </div>`;
   });
 }
-
+ 
 function goToPrompts() {
   hide("phaseReport");
   renderPrompts();
   show("phasePrompts");
   window.scrollTo({top:0,behavior:"smooth"});
 }
-
+ 
 function goToReport() {
   hide("phasePrompts");
   show("phaseReport");
   window.scrollTo({top:0,behavior:"smooth"});
 }
-
+ 
 function renderPrompts() {
   const container = document.getElementById("promptsList");
   container.innerHTML = "";
-
+ 
   if (!lovablePrompts.length) {
     container.innerHTML = `<div style="text-align:center;color:#555;padding:2rem;font-family:monospace;font-size:0.85rem">Nenhum prompt gerado. Tente uma nova análise.</div>`;
     return;
   }
-
+ 
   lovablePrompts.forEach((p, i) => {
     const ic = IMPACT_COLOR[p.impacto]||"#888";
     const rankColor = i===0?"#c8a96e":i===1?"#FF6B35":i===2?"#F59E0B":"#555";
@@ -554,14 +531,14 @@ function renderPrompts() {
     </div>`;
   });
 }
-
+ 
 function togglePrompt(i) {
   const card = document.getElementById("pc_"+i);
   const isOpen = card.classList.contains("open");
   document.querySelectorAll(".prompt-card").forEach(c=>c.classList.remove("open"));
   if (!isOpen) card.classList.add("open");
 }
-
+ 
 function copyPrompt(i) {
   const text = document.getElementById("pb_"+i).textContent;
   navigator.clipboard.writeText(text).then(() => {
@@ -571,7 +548,7 @@ function copyPrompt(i) {
     setTimeout(()=>{ btn.textContent="📋 COPIAR PROMPT"; btn.classList.remove("copied"); }, 3000);
   });
 }
-
+ 
 function toggleExpert(id) {
   const card = document.getElementById("ec_"+id);
   const open = card.classList.contains("open");
@@ -588,7 +565,7 @@ function toggleExpert(id) {
   }
   document.querySelectorAll(".chevron").forEach(c=>{ if(c.id!=="chev_"+id) c.textContent="▼"; });
 }
-
+ 
 function formatBullets(text) {
   return text.split("\n").map(line => {
     if (!line.trim()) return "<div style='height:0.35rem'></div>";
@@ -596,11 +573,11 @@ function formatBullets(text) {
     return `<div style='padding-left:0.4rem;margin-bottom:0.25rem;line-height:1.65'>${line}</div>`;
   }).join("");
 }
-
+ 
 function escapeHtml(text) {
   return text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
-
+ 
 function reset() {
   expertResults={}; ceoData=null; synthesisData=null; lovablePrompts=[];
   ["phaseInput","phaseCeoThinking","phasePlanApproval","phaseDelegating","phaseSynthesizing","phaseReport","phasePrompts"]
@@ -610,7 +587,7 @@ function reset() {
   document.getElementById("btnNovo").style.display="none";
   show("phaseInput");
 }
-
+ 
 document.getElementById("inputIssue").addEventListener("input",()=>{
   document.getElementById("btnSubmit").disabled=!document.getElementById("inputIssue").value.trim();
 });
