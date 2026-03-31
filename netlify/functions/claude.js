@@ -21,7 +21,7 @@ exports.handler = async (event) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": "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",
+        "x-api-key": process.env.ANTHROPIC_API_KEY,
         "anthropic-version": "2023-06-01",
         "Content-Length": Buffer.byteLength(body),
       },
@@ -33,7 +33,10 @@ exports.handler = async (event) => {
       res.on("end", () => {
         resolve({
           statusCode: 200,
-          headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" },
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json",
+          },
           body: data,
         });
       });
