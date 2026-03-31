@@ -13,44 +13,72 @@ exports.handler = async (event) => {
     };
   }
 
-  return new Promise((resolve) => {
-    const body = event.body;
-    const options = {
-      hostname: "api.anthropic.com",
-      path: "/v1/messages",
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": process.env.ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
-        "Content-Length": Buffer.byteLength(body),
-      },
-    };
+  try {
+    const { messages } = JSON.parse(event.body);
+    const userMessage = messages[0].content;
 
-    const req = https.request(options, (res) => {
-      let data = "";
-      res.on("data", (chunk) => { data += chunk; });
-      res.on("end", () => {
-        resolve({
-          statusCode: 200,
-          headers: {
-            "Access-Control-Allow-Origin": "*",
-            "Content-Type": "application/json",
-          },
-          body: data,
+    const geminiBody = JSON.stringify({
+      contents: [{ parts: [{ text: userMessage }] }],
+      generationConfig: { maxOutputTokens: 4000, temperature: 0.7 }
+    });
+
+    return new Promise((resolve) => {
+      const apiKey = process.env.GEMINI_API_KEY;
+      const options = {
+        hostname: "generativelanguage.googleapis.com",
+        path: `/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Content-Length": Buffer.byteLength(geminiBody),
+        },
+      };
+
+      const req = https.request(options, (res) => {
+        let data = "";
+        res.on("data", (chunk) => { data += chunk; });
+        res.on("end", () => {
+          try {
+            const geminiResponse = JSON.parse(data);
+            const text = geminiResponse.candidates?.[0]?.content?.parts?.[0]?.text || "";
+            // Format as Anthropic-compatible response
+            const anthropicFormat = {
+              content: [{ type: "text", text: text }]
+            };
+            resolve({
+              statusCode: 200,
+              headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(anthropicFormat),
+            });
+          } catch(e) {
+            resolve({
+              statusCode: 200,
+              headers: { "Access-Control-Allow-Origin": "*", "Content-Type": "application/json" },
+              body: JSON.stringify({ content: [{ type: "text", text: data }] }),
+            });
+          }
         });
       });
-    });
 
-    req.on("error", (err) => {
-      resolve({
-        statusCode: 500,
-        headers: { "Access-Control-Allow-Origin": "*" },
-        body: JSON.stringify({ error: err.message }),
+      req.on("error", (err) => {
+        resolve({
+          statusCode: 500,
+          headers: { "Access-Control-Allow-Origin": "*" },
+          body: JSON.stringify({ error: err.message }),
+        });
       });
-    });
 
-    req.write(body);
-    req.end();
-  });
+      req.write(geminiBody);
+      req.end();
+    });
+  } catch(err) {
+    return {
+      statusCode: 500,
+      headers: { "Access-Control-Allow-Origin": "*" },
+      body: JSON.stringify({ error: err.message }),
+    };
+  }
 };
