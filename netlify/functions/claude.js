@@ -23,7 +23,7 @@ exports.handler = async (event) => {
     });
 
     return new Promise((resolve) => {
-      const apiKey = process.env.GEMINI_API_KEY;
+      const apiKey = "AIzaSyAsJF4HYbeZjiNYaA5AbsuAqVgFP2-_2Yo";
       const options = {
         hostname: "generativelanguage.googleapis.com",
         path: `/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
